@@ -3,6 +3,7 @@ Place to store the code I used and highlight some analysis and results
 
 # Video visualisation
 This montage shows the geaomety and apearnace of a section of one microfluidc channel. The cells were fixed and stained for nuclei (blue), actin (red) and CD45, a macrophage marker (green).
+![](images/20250312_Chip19_3D_channel10_1_maxres.gif)
 
 
 # License
