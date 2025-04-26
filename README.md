@@ -17,13 +17,13 @@ Custom Python and MATLAB scripts were developed to perform segmentation, morphol
    - From `.nd2` files, VE-cadherin, nuclei, and CD45 channels were extracted using FIJI.
 
 2. **MΦ Adhesion Analysis**  
-   - CD45-stained images were analyzed in FIJI to quantify macrophage numbers.
+   - CD45-stained images were analyzed in FIJI to quantify MΦ numbers.
    - **Relevant Files**:
-     - `MFadhesion_analysis.ipynb` – Python notebook for processing and analyzing macrophage adhesion.
+     - `MFadhesion_analysis.ipynb` – Python notebook for processing and analyzing MΦ adhesion.
    - **Key Steps**:
      - Load CD45-stained images.
-     - Preprocess and segment the images in FIJI.
-     - Quantify macrophage numbers based on segmented regions.
+     - Preprocess the images and count adherend MΦs in FIJI.
+     - Analyse and vizualize quantified MΦ numbers.
 
 3. **Morphology Analysis**  
    - VE-cadherin and nuclei channels were segmented in a human-in-the-loop segmentation workflow with Cellpose.
@@ -69,13 +69,6 @@ Custom Python and MATLAB scripts were developed to perform segmentation, morphol
   - Required for running the `AFT_batch.m` script in the **Nematic Ordering Analysis** section.
 - **FIJI/ImageJ**  
   - Required for preprocessing and segmenting microscopy images in the **Imaging & Data Extraction** and **MΦ Adhesion Analysis** sections.
-
-## Usage
-
-1. Preprocess and segment the microscopy images using FIJI and Cellpose (see provided Segmentation model).
-2. Run `morphology_analysis.ipynb` to analyze cell shape parameters.
-3. Run `nematic_ordering.ipynb` to calculate nematic order parameters.
-4. Use `AFT_batch.m` from [AFT - Alignment by Fourier Transform](https://github.com/OakesLab/AFT-Alignment_by_Fourier_Transform) in MATLAB to visualize alignment vectors.
 
 # Video visualisation
 This montage shows the geaomety and apearnace of a section of one microfluidc channel. The cells were fixed and stained for nuclei (blue), actin (red) and CD45, a macrophage marker (green).
