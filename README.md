@@ -8,31 +8,53 @@ The analysis pipeline processes raw microscopy data to extract quantitative info
 - Nematic Ordering of HUVECs (using [AFT - Alignment by Fourier Transform](https://github.com/OakesLab/AFT-Alignment_by_Fourier_Transform))
   
 Custom Python and MATLAB scripts were developed to perform segmentation, morphology quantification, and nematic ordering analysis.
+
 ## Workflow Summary
 
 1. **Imaging & Data Extraction**  
    - HUVECs were cultured, fixed, and fluorescently stained.
    - Imaging was performed using a Nikon SDCM microscope.
-   - From `.nd2` files, VE-cadherin, nuclei, and CD45 channels were extracted.
+   - From `.nd2` files, VE-cadherin, nuclei, and CD45 channels were extracted using FIJI.
 
 2. **MΦ Adhesion Analysis**  
    - CD45-stained images were analyzed in FIJI to quantify macrophage numbers.
+   - **Relevant Files**:
+     - `MFadhesion_analysis.ipynb` – Python notebook for processing and analyzing macrophage adhesion.
+   - **Key Steps**:
+     - Load CD45-stained images.
+     - Preprocess and segment the images in FIJI.
+     - Quantify macrophage numbers based on segmented regions.
 
 3. **Morphology Analysis**  
-   - VE-cadherin and nuclei channels were used in a human-in-the-loop segmentation workflow with Cellpose.
+   - VE-cadherin and nuclei channels were segmented in a human-in-the-loop segmentation workflow with Cellpose.
    - The script `morphology_analysis.ipynb` was used to quantify cellular morphology based on the segmentations.
+   - **Relevant Files**:
+     - `morphology_analysis.ipynb` – Main script for morphology analysis.
+     - `Morphology_tools.py` – Contains helper functions for processing and analyzing morphology.
+   - **Key Functions**:
+     - `process_and_initialize`: Prepares labeled images, outlines, and actin images for analysis.
+     - `create_propertie_image`: Generates property images (e.g., area, aspect ratio, tortuosity) for visualization.
+     - `save_as_figure`: Saves the generated property images as figures.
+   - **Key Steps**:
+     - Segment images using Cellpose.
+     - Analyze morphology parameters such as area, aspect ratio, and tortuosity.
+     - Save results as images and data files.
 
 4. **Nematic Ordering Analysis**  
    - Cell edge segmentations were analyzed for nematic ordering using the script `nematic_ordering.ipynb`.
    - The scientific method AFT (Alignment by Fourier Transform) was applied.
    - The MATLAB script `AFT_batch.m` (part of the AFT software package) was used for visualization of local alignment vectors.
-
-## Repository Contents
-
-- `morphology_analysis.ipynb` – Quantitative analysis of cellular morphology from segmented images.
-- `nematic_ordering.ipynb` – Analysis of nematic ordering using Fourier transform methods.
-- `AFT_batch.m` – MATLAB script used for batch processing alignment vectors with AFT.
-- (Optional) Example input and output data if included.
+   - **Relevant Files**:
+     - `Collective Allignment/nematic_ordering.ipynb` – Main script for nematic ordering analysis.
+     - `Collective Allignment/Analysis_tools.py` – Contains helper functions for processing nematic ordering data.
+   - **Key Functions**:
+     - `load_and_process_matlab_data`: Loads and processes MATLAB AFT data for analysis.
+     - `process_data`: Processes nematic ordering data, including calculating order parameters and neighborhood sizes.
+     - `process_python_AFT_data`: Processes Python-based AFT data for additional analysis.
+   - **Key Steps**:
+     - Use MATLAB's `AFT_batch.m` script to generate alignment vectors.
+     - Load and process the resulting data in Python.
+     - Calculate nematic order parameters and visualize results.
 
 ## Requirements
 
@@ -47,16 +69,15 @@ Custom Python and MATLAB scripts were developed to perform segmentation, morphol
 1. Preprocess and segment the microscopy images using FIJI and Cellpose (see provided Segmentation model).
 2. Run `morphology_analysis.ipynb` to analyze cell shape parameters.
 3. Run `nematic_ordering.ipynb` to calculate nematic order parameters.
-4. Use `AFT_batch.m` in MATLAB to visualize alignment vectors.
-
-## Citation
-
-If you use this code for your own work, please cite the corresponding thesis and/or the AFT method where appropriate.
+4. Use `AFT_batch.m` from [AFT - Alignment by Fourier Transform](https://github.com/OakesLab/AFT-Alignment_by_Fourier_Transform) in MATLAB to visualize alignment vectors.
 
 # Video visualisation
 This montage shows the geaomety and apearnace of a section of one microfluidc channel. The cells were fixed and stained for nuclei (blue), actin (red) and CD45, a macrophage marker (green).
 ![](images/20250312_Chip19_3D_channel10_1_maxres.gif)
 
+# Citation
+
+If you use this code for your own work, please cite the corresponding thesis and/or the AFT method where appropriate.
 
 # License
 The content of this project itself is licensed under the [Creative Commons Attribution 4.0 Unported license](https://creativecommons.org/licenses/by/4.0/deed.en), and the underlying source code used to analyse and display that content is licensed under the [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
