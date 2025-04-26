@@ -45,8 +45,8 @@ Custom Python and MATLAB scripts were developed to perform segmentation, morphol
    - The scientific method AFT (Alignment by Fourier Transform) was applied.
    - The MATLAB script `AFT_batch.m` (part of the AFT software package) was used for visualization of local alignment vectors.
    - **Relevant Files**:
-     - `Collective Allignment/nematic_ordering.ipynb` – Main script for nematic ordering analysis.
-     - `Collective Allignment/Analysis_tools.py` – Contains helper functions for processing nematic ordering data.
+     - `nematic_ordering.ipynb` – Main script for nematic ordering analysis.
+     - `Analysis_tools.py` – Contains helper functions for processing nematic ordering data.
    - **Key Functions**:
      - `load_and_process_matlab_data`: Loads and processes MATLAB AFT data for analysis.
      - `process_data`: Processes nematic ordering data, including calculating order parameters and neighborhood sizes.
@@ -60,9 +60,15 @@ Custom Python and MATLAB scripts were developed to perform segmentation, morphol
 
 - **Python 3.x**  
   - Required packages: `numpy`, `pandas`, `matplotlib`, `seaborn`, `scikit-image`, `cellpose`, `SciPy`, `Statsmodels`, `Scikit-posthocs`
-  - Different enviroments are provided
-- **MATLAB**
+  - Different environments are provided for specific tasks:
+    - `cellpose_env.yml`: Used for segmentation tasks with Cellpose in the **Morphology Analysis** section.
+    - `morphology_analysis.yml`: Used for analyzing cell shape parameters in the **Morphology Analysis** section.
+    - `analysis_env.yml`: Used for processing and analyzing nematic ordering data in the **Nematic Ordering Analysis** section.
+    - `aft_312_env.yml`: Used for calculating order parameter in AFT-related scripts in the **Nematic Ordering Analysis** section.
+- **MATLAB**  
+  - Required for running the `AFT_batch.m` script in the **Nematic Ordering Analysis** section.
 - **FIJI/ImageJ**  
+  - Required for preprocessing and segmenting microscopy images in the **Imaging & Data Extraction** and **MΦ Adhesion Analysis** sections.
 
 ## Usage
 
