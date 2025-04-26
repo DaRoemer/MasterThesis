@@ -10,6 +10,10 @@
 # image normalization, and parameter search for window size and neighborhood radius.
 # The script also includes functions for comparing parameters between two datasets and plotting the results.
 #-------------------------------------------------------
+
+#-------------------------------------------------------
+# Import necessary libraries
+#-------------------------------------------------------
 from typing import List, Tuple, Union, Optional
 import numpy as np
 from scipy.fft import fft2, fftshift, ifft2, ifftshift, fft, ifft, fftfreq

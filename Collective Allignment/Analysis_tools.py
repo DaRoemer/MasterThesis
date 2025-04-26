@@ -1,14 +1,17 @@
-"""
-Data Analysis Utilities
-University of Tübingen, AG Bastounis
-Author:        Felix Romer
-Date:          2024-12-11
-Last modified: 2024-12-18
-Description:   This module contains functions for processing data, 
-               statistical analysis, and plotting results.
-"""
+#-------------------------------------------------------
+# AFT_tools.py
+# By: Felix Romer
+# Last updated: 24.04.2025
+# Description:
+# This script contains functions to load, process, and analyze data from MATLAB AFT files.
+# It includes functions for loading data, performing statistical tests, and plotting results.
+# The script is designed to work with data from the AFT (Alignment by fourier transform) analysis.
+# It is intended for use in the analysis of cell alignment and order parameters in microscopy images.
+#-------------------------------------------------------
 
+# ------------------------------------------------------
 # Import necessary libraries
+# ------------------------------------------------------
 import os
 import numpy as np
 import pandas as pd
@@ -20,11 +23,9 @@ import scipy.io as sio
 from typing import Tuple
 from typing import Optional
 
-
-
-
-
-
+# ------------------------------------------------------
+# Data Loading and Processing
+# ------------------------------------------------------
 def load_and_process_matlab_data(
     main_dr: str,
     folder_names: list,
@@ -111,7 +112,6 @@ def load_and_process_matlab_data(
     )
 
     return df, neighbourhood_um
-
 
 def process_data(
     parameters_df: pd.DataFrame,
@@ -258,7 +258,9 @@ def process_python_AFT_data(df,
 
     return df
 
-
+# ------------------------------------------------------
+# Statistical Analysis
+# ------------------------------------------------------
 def perform_kruskal_conover(
     df: pd.DataFrame,
     value_col: str = 'Order parameter',
@@ -316,7 +318,9 @@ def perform_kruskal_conover(
 
     return kruskal_results, conover_df
 
-
+# ------------------------------------------------------
+# Plotting Functions
+# ------------------------------------------------------
 def plot_by_windowsize(
     df: pd.DataFrame,
     windowsize: Optional[int] = None,
