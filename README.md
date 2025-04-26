@@ -37,7 +37,8 @@ Custom Python and MATLAB scripts were developed to perform segmentation, morphol
 ## Requirements
 
 - **Python 3.x**  
-  - Required packages: `numpy`, `pandas`, `matplotlib`, `scikit-image`, `cellpose`, `opencv-python`
+  - Required packages: `numpy`, `pandas`, `matplotlib`, `seaborn`, `scikit-image`, `cellpose`, `SciPy`, `Statsmodels`, `Scikit-posthocs`
+  - Different enviroments are provided
 - **MATLAB**
 - **FIJI/ImageJ**  
 
@@ -47,6 +48,10 @@ Custom Python and MATLAB scripts were developed to perform segmentation, morphol
 2. Run `morphology_analysis.ipynb` to analyze cell shape parameters.
 3. Run `nematic_ordering.ipynb` to calculate nematic order parameters.
 4. Use `AFT_batch.m` in MATLAB to visualize alignment vectors.
+
+## Citation
+
+If you use this code for your own work, please cite the corresponding thesis and/or the AFT method where appropriate.
 
 # Video visualisation
 This montage shows the geaomety and apearnace of a section of one microfluidc channel. The cells were fixed and stained for nuclei (blue), actin (red) and CD45, a macrophage marker (green).
