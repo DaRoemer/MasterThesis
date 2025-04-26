@@ -1,3 +1,11 @@
+#-------------------------------------------------------
+# AFT_tools.py
+# By Marcotti et al. 2021
+# DOI: 10.3389/fcomp.2021.745831
+# Adapted by: Felix Romer
+# Last update: 26.04.2025
+#-------------------------------------------------------
+from typing import List, Tuple, Union, Optional
 import numpy as np
 from scipy.fft import fft2, fftshift, ifft2, ifftshift, fft, ifft, fftfreq
 import skimage.io as io
@@ -9,12 +17,107 @@ import pandas as pd
 from scipy.stats import mannwhitneyu
 import os
 
+#-------------------------------------------------------
+# Utility functions
+#-------------------------------------------------------
 
-def image_norm(im):
+def image_norm(im: np.ndarray) -> np.ndarray:
+    """
+    Calculate the norm of an image.
+
+    Args:
+        im (np.ndarray): Input image.
+
+    Returns:
+        np.ndarray: Normalized image.
+    """
     im_norm = np.sqrt(np.real(im * np.conj(im)))
     return im_norm
 
-def periodic_decomposition(im):
+def pad_to_square(image: np.ndarray) -> np.ndarray:
+    """
+    Pad an image to make it square.
+
+    Args:
+        image (np.ndarray): Input image.
+
+    Returns:
+        np.ndarray: Padded square image.
+    """
+    a, b = image.shape[:2]  # Get original dimensions
+    size = max(a, b)  # The target size to make it square
+    
+    # Compute padding (balanced on both sides)
+    pad_top = (size - a) // 2
+    pad_bottom = size - a - pad_top
+    pad_left = (size - b) // 2
+    pad_right = size - b - pad_left
+    
+    # Create padding format dynamically
+    pad_width = [(pad_top, pad_bottom), (pad_left, pad_right)]
+    
+    if image.ndim == 3:  # If the image has channels, don't pad them
+        pad_width.append((0, 0))
+    
+    # Apply padding
+    padded_image = np.pad(image, pad_width, mode='constant', constant_values=0)
+    
+    return padded_image
+
+def rotate_and_crop(
+    label_image: np.ndarray,
+    flow_direction: str,
+    display_orientation: str,
+    flow_direction_map: dict,
+    crop_image: bool
+) -> np.ndarray:
+    """
+    Rotate and crop an image based on flow direction and display orientation.
+
+    Args:
+        label_image (np.ndarray): Input label image.
+        flow_direction (str): Flow direction of the image.
+        display_orientation (str): Desired display orientation.
+        flow_direction_map (dict): Mapping of flow directions to rotations.
+        crop_image (bool): Whether to crop the image.
+
+    Returns:
+        np.ndarray: Rotated and cropped image.
+    """
+    # Read and rotate image
+    rotations = 0
+    if display_orientation != flow_direction:
+        rotations = (flow_direction_map[display_orientation] - flow_direction_map[flow_direction]) % 4
+        label_image = np.rot90(label_image, k=rotations)
+
+    if crop_image == False:
+        return label_image
+    if (flow_direction == 'to_right') | (flow_direction == 'to_left'):
+        dimension = 0
+    else:
+        dimension = 1
+    crop_min, crop_max = np.where(label_image != 0)[dimension].min(), np.where(label_image != 0)[dimension].max()
+    if dimension == 0:
+        croped_image = label_image[crop_min:crop_max, :]
+    else:
+        croped_image = label_image[:, crop_min:crop_max]
+
+    return croped_image
+
+#-------------------------------------------------------
+# Image processing functions
+#-------------------------------------------------------
+
+def periodic_decomposition(im: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Perform periodic decomposition of an image.
+
+    Args:
+        im (np.ndarray): Input image.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: Periodic component and smooth component of the image.
+    """
     im = im.astype('float32')
     # find the number of rows and cols
     N_rows, N_cols = im.shape
@@ -38,7 +141,18 @@ def periodic_decomposition(im):
 
     return p, s
 
-def least_moment(image, xcoords=[], ycoords=[]):
+def least_moment(image: np.ndarray, xcoords: Optional[np.ndarray] = [], ycoords: Optional[np.ndarray] = []) -> Tuple[float, float]:
+    """
+    Calculate the least moment of an image.
+
+    Args:
+        image (np.ndarray): Input image.
+        xcoords (Optional[np.ndarray]): X-coordinates for the image. Defaults to [].
+        ycoords (Optional[np.ndarray]): Y-coordinates for the image. Defaults to [].
+
+    Returns:
+        Tuple[float, float]: Angle of axis (theta) and eccentricity.
+    """
     # get the image shape
     N_rows, N_cols = image.shape
 
@@ -79,8 +193,41 @@ def least_moment(image, xcoords=[], ycoords=[]):
 
     return theta, eccentricity
 
-def image_local_order(i, imstack, window_size = 33, overlap = 0.5, im_mask = None, intensity_thresh = 0, eccentricity_thresh = 0, 
-                        plot_overlay=False, plot_angles=False, plot_eccentricity=False, save_figures=False, save_path = ''):
+def image_local_order(
+    i: int,
+    imstack: np.ndarray,
+    window_size: int = 33,
+    overlap: float = 0.5,
+    im_mask: Optional[np.ndarray] = None,
+    intensity_thresh: float = 0,
+    eccentricity_thresh: float = 0,
+    plot_overlay: bool = False,
+    plot_angles: bool = False,
+    plot_eccentricity: bool = False,
+    save_figures: bool = False,
+    save_path: str = ''
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Calculate the local order of an image or stack of images.
+
+    Args:
+        i (int): Index of the image.
+        imstack (np.ndarray): Stack of images.
+        window_size (int): Size of the window. Defaults to 33.
+        overlap (float): Overlap between windows. Defaults to 0.5.
+        im_mask (Optional[np.ndarray]): Mask for the image. Defaults to None.
+        intensity_thresh (float): Intensity threshold. Defaults to 0.
+        eccentricity_thresh (float): Eccentricity threshold. Defaults to 0.
+        plot_overlay (bool): Whether to plot overlay. Defaults to False.
+        plot_angles (bool): Whether to plot angles. Defaults to False.
+        plot_eccentricity (bool): Whether to plot eccentricity. Defaults to False.
+        save_figures (bool): Whether to save figures. Defaults to False.
+        save_path (str): Path to save figures. Defaults to ''.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]: 
+        X-coordinates, Y-coordinates, U-component, V-component, theta stack, and eccentricity stack.
+    """
     
     # check if an output directory is given
     if len(save_path) > 0:
@@ -243,9 +390,21 @@ def image_local_order(i, imstack, window_size = 33, overlap = 0.5, im_mask = Non
 
     return x, y, u_stack, v_stack, theta_stack, ecc_stack
 
+#-------------------------------------------------------
+# Analysis functions
+#-------------------------------------------------------
 
-def calculate_order_parameter(im_theta_stack, neighborhood_radius):
+def calculate_order_parameter(im_theta_stack: Union[np.ndarray, List[np.ndarray]], neighborhood_radius: int) -> Union[float, List[float]]:
+    """
+    Calculate the order parameter for an image or stack of images.
 
+    Args:
+        im_theta_stack (Union[np.ndarray, List[np.ndarray]]): Stack of theta matrices.
+        neighborhood_radius (int): Radius of the neighborhood.
+
+    Returns:
+        Union[float, List[float]]: Order parameter(s).
+    """
     # check if it's a list
     if type(im_theta_stack) == np.ndarray:
         im_theta_stack = [im_theta_stack]
@@ -280,52 +439,40 @@ def calculate_order_parameter(im_theta_stack, neighborhood_radius):
 
     return im_orderparameter_stack
 
-# Crop and rotate image, if needed
-def rotate_and_crop(label_image, flow_direction, display_orientation, flow_direction_map, crop_image):
-    # Read and rotate image
-    rotations = 0
-    if display_orientation != flow_direction:
-        rotations = (flow_direction_map[display_orientation] - flow_direction_map[flow_direction]) % 4
-        label_image = np.rot90(label_image, k=rotations)
+def parameter_search(
+    image_list: List[str],
+    min_win_size: int,
+    win_size_interval: int,
+    overlap: float,
+    flow_direction_map: dict,
+    flow_direction: str = 'to_right',
+    display_orientation: str = 'to_right',
+    max_win_size: Optional[int] = None,
+    plot_figure: bool = True,
+    from_cellpose_segmentation: bool = False,
+    crop_image: bool = False,
+    pad: bool = False
+) -> Tuple[pd.DataFrame, np.ndarray]:
+    """
+    Perform parameter search for window size and neighborhood radius.
 
-    if crop_image == False:
-        return label_image
-    if (flow_direction == 'to_right') | (flow_direction == 'to_left'):
-        dimension = 0
-    else:
-        dimension = 1
-    crop_min, crop_max = np.where(label_image != 0)[dimension].min(), np.where(label_image != 0)[dimension].max()
-    if dimension == 0:
-        croped_image = label_image[crop_min:crop_max, :]
-    else:
-        croped_image = label_image[:, crop_min:crop_max]
+    Args:
+        image_list (List[str]): List of image file paths.
+        min_win_size (int): Minimum window size.
+        win_size_interval (int): Interval for window size.
+        overlap (float): Overlap between windows.
+        flow_direction_map (dict): Mapping of flow directions.
+        flow_direction (str): Flow direction of the image. Defaults to 'to_right'.
+        display_orientation (str): Desired display orientation. Defaults to 'to_right'.
+        max_win_size (Optional[int]): Maximum window size. Defaults to None.
+        plot_figure (bool): Whether to plot the results. Defaults to True.
+        from_cellpose_segmentation (bool): Whether the input is from Cellpose segmentation. Defaults to False.
+        crop_image (bool): Whether to crop the image. Defaults to False.
+        pad (bool): Whether to pad the image. Defaults to False.
 
-    return croped_image
-
-def pad_to_square(image):
-    a, b = image.shape[:2]  # Get original dimensions
-    size = max(a, b)  # The target size to make it square
-    
-    # Compute padding (balanced on both sides)
-    pad_top = (size - a) // 2
-    pad_bottom = size - a - pad_top
-    pad_left = (size - b) // 2
-    pad_right = size - b - pad_left
-    
-    # Create padding format dynamically
-    pad_width = [(pad_top, pad_bottom), (pad_left, pad_right)]
-    
-    if image.ndim == 3:  # If the image has channels, don't pad them
-        pad_width.append((0, 0))
-    
-    # Apply padding
-    padded_image = np.pad(image, pad_width, mode='constant', constant_values=0)
-    
-    return padded_image
-
-def parameter_search(image_list, min_win_size, win_size_interval,
-                     overlap, flow_direction_map, flow_direction = 'to_right', display_orientation = 'to_right', 
-                     max_win_size = None, plot_figure=True, from_cellpose_segmentation=False, crop_image = False, pad = False):
+    Returns:
+        Tuple[pd.DataFrame, np.ndarray]: Dataframe of results and window-neighborhood matrix.
+    """
     # turn off warning for division by NaN
     np.seterr(divide='ignore', invalid='ignore')
     
@@ -441,7 +588,28 @@ def parameter_search(image_list, min_win_size, win_size_interval,
 
     return Order_dataframe, window_neighborhood
 
-def parameter_comparison(Order_dataframe1, window_neighborhood1, Order_dataframe2, window_neighborhood2, save_figures=False, save_path = ''):
+def parameter_comparison(
+    Order_dataframe1: pd.DataFrame,
+    window_neighborhood1: np.ndarray,
+    Order_dataframe2: pd.DataFrame,
+    window_neighborhood2: np.ndarray,
+    save_figures: bool = False,
+    save_path: str = ''
+) -> Tuple[np.ndarray, np.ndarray, List[int], List[int]]:
+    """
+    Compare parameters between two datasets.
+
+    Args:
+        Order_dataframe1 (pd.DataFrame): Dataframe of the first dataset.
+        window_neighborhood1 (np.ndarray): Window-neighborhood matrix of the first dataset.
+        Order_dataframe2 (pd.DataFrame): Dataframe of the second dataset.
+        window_neighborhood2 (np.ndarray): Window-neighborhood matrix of the second dataset.
+        save_figures (bool): Whether to save figures. Defaults to False.
+        save_path (str): Path to save figures. Defaults to ''.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray, List[int], List[int]]: Order difference, p-value matrix, window sizes, and neighborhood sizes.
+    """
     # Find the number of different windows and neighborhoods tested 
     win_size_list = sorted(np.unique(Order_dataframe1['window_size']))
     N_windows = len(win_size_list)
