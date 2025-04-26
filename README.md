@@ -43,7 +43,7 @@ Custom Python and MATLAB scripts were developed to perform segmentation, morphol
 4. **Nematic Ordering Analysis**  
    - Cell edge segmentations were analyzed for nematic ordering using the script `nematic_ordering.ipynb`.
    - The scientific method AFT (Alignment by Fourier Transform) was applied.
-   - The MATLAB script `AFT_batch.m` (part of the AFT software package) was used for visualization of local alignment vectors.
+   - The MATLAB script `AFT_batch.m` (part of the AFT software package and adapted by me) was used for visualization of local alignment vectors. The functions from the AFT software are needed to successfully use this function.
    - **Relevant Files**:
      - `nematic_ordering.ipynb` – Main script for nematic ordering analysis.
      - `Analysis_tools.py` – Contains helper functions for processing nematic ordering data.
@@ -52,9 +52,9 @@ Custom Python and MATLAB scripts were developed to perform segmentation, morphol
      - `process_data`: Processes nematic ordering data, including calculating order parameters and neighborhood sizes.
      - `process_python_AFT_data`: Processes Python-based AFT data for additional analysis.
    - **Key Steps**:
-     - Use MATLAB's `AFT_batch.m` script to generate alignment vectors.
-     - Load and process the resulting data in Python.
-     - Calculate nematic order parameters and visualize results.
+     - Analyse neamtic ordering in `nematic_ordering.ipynb`.
+     - Calculate nematic order parameters and order decay to visualize distance dependet alignment.
+     - Use MATLAB's `AFT_batch.m` script to generate alignment vectors and heatmaps of selected images.
 
 ## Requirements
 
