@@ -83,3 +83,7 @@ If you use this code for your own work, please cite the corresponding thesis and
 
 # License
 The content of this project itself is licensed under the [Creative Commons Attribution 4.0 Unported license](https://creativecommons.org/licenses/by/4.0/deed.en), and the underlying source code used to analyse and display that content is licensed under the [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
+
+# Acknowledgment
+
+This work was conducted as part of my Master's thesis. I would like to express my gratitude to everyone who supported and guided me throughout this project. In particular, I would like to thank my group leader Effie Bastounis and my supervisor Marie Münkel for their invaluable support and mentorship.
