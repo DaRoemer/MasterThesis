@@ -71,8 +71,11 @@ Custom Python and MATLAB scripts were developed to perform segmentation, morphol
   - Required for preprocessing and segmenting microscopy images in the **Imaging & Data Extraction** and **MΦ Adhesion Analysis** sections.
 
 # Video visualisation
-This montage shows the geaomety and apearnace of a section of one microfluidc channel. The cells were fixed and stained for nuclei (blue), actin (red) and CD45, a macrophage marker (green).
-![](images/20250312_Chip19_3D_channel10_1_maxres.gif)
+This montage shows the geometry and appearance of a section of one microfluidc channel. The cells were fixed and stained for nuclei (blue), actin (red) and CD45, a macrophage marker (green).
+
+<div style="text-align: center;">
+  <img src="images/20250312_Chip19_3D_channel10_1_maxres.gif" alt="Microfluidic Channel Visualization">
+</div>
 
 # Citation
 
