@@ -4,6 +4,11 @@
 # DOI: 10.3389/fcomp.2021.745831
 # Adapted by: Felix Romer
 # Last update: 26.04.2025
+# Description:
+# This script contains functions for analyzing and visualizing the local alignment of images.
+# It includes functions for periodic decomposition, least moment calculation, local order calculation,
+# image normalization, and parameter search for window size and neighborhood radius.
+# The script also includes functions for comparing parameters between two datasets and plotting the results.
 #-------------------------------------------------------
 from typing import List, Tuple, Union, Optional
 import numpy as np
