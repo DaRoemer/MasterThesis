@@ -23,12 +23,12 @@ def count_neighbors(region: dict, label_image: np.ndarray, labels: list) -> int:
     Count the number of unique neighboring regions for a given region in a labeled image.
 
     Parameters:
-    region (dict): The region properties dictionary.
-    label_image (np.ndarray): The labeled image.
-    labels (list): List of labels present in the image.
+        region (dict): The region properties dictionary.
+        label_image (np.ndarray): The labeled image.
+        labels (list): List of labels present in the image.
 
     Returns:
-    int: Number of unique neighboring regions.
+        int: Number of unique neighboring regions.
     """
     if region['label'] == 0:  # Skip the background label
         return None
@@ -58,13 +58,13 @@ def find_intersection(x1: float, y1: float, x2: float, y2: float, minf_angle: fl
     Find the intersection point between a line segment and a line defined by the minimum Feret angle and distance.
 
     Parameters:
-    x1, y1, x2, y2 (float): Coordinates of the line segment.
-    minf_angle (float): Minimum Feret angle.
-    minf_t (float): Minimum Feret distance.
-    x0, y0 (float): Coordinates of the point on the minimum Feret line.
+        x1, y1, x2, y2 (float): Coordinates of the line segment.
+        minf_angle (float): Minimum Feret angle.
+        minf_t (float): Minimum Feret distance.
+        x0, y0 (float): Coordinates of the point on the minimum Feret line.
 
     Returns:
-    list: Coordinates of the intersection point.
+        list: Coordinates of the intersection point.
     """
     # Line equation for the edge: y = m_edge * x + c_edge
     if x2 != x1:  # Avoid division by zero
@@ -116,13 +116,19 @@ def calculate_actin_fibers(region_label: int, actin_image: np.ndarray, label_ima
     Calculate the number of actin fibers in a given region of an actin image.
 
     Parameters:
-    region_label (int): The label of the region.
-    actin_image (np.ndarray): The actin image.
-    label_image (np.ndarray): The labeled image.
-    fcal (float): Calibration factor.
+        region_label (int): The label of the region.
+        actin_image (np.ndarray): The actin image.
+        label_image (np.ndarray): The labeled image.
+        fcal (float): Calibration factor.
 
     Returns:
-    tuple: Number of actin fibers, profile line, smoothed line, peaks, start and end points, minimum Feret distance.
+        tuple: 
+            - int: Number of actin fibers.
+            - np.ndarray: Profile line.
+            - np.ndarray: Smoothed line.
+            - list: Peaks.
+            - list: Start and end points.
+            - float: Minimum Feret distance.
     """
     im = np.where(label_image == region_label, 1, 0)
     y_max, x_max = im.shape
@@ -154,24 +160,29 @@ def calculate_actin_fibers(region_label: int, actin_image: np.ndarray, label_ima
 # Data processing and visulaization
 #-------------------------------------------------------
 # Processing and initialization
-def process_and_initialize(file: str, actin_file:str, image_dir: str, actin_dir:str, outdir: str, flow_direction_map: dict, flow_direction: str, params: dict, npy: bool = True) -> tuple:
+def process_and_initialize(file: str, actin_file: str, image_dir: str, actin_dir: str, outdir: str, flow_direction_map: dict, flow_direction: str, params: dict, npy: bool = True) -> tuple:
     """
     Process and initialize the labeled image and outlines from a file.
 
     Parameters:
-    file (str): The file name.
-    image_dir (str): The directory containing the image.
-    outdir (str): The output directory.
-    flow_direction_map (dict): Mapping of flow directions.
-    flow_direction (str): The flow direction.
-    display_orientation (str): The display orientation.
-    crop_image (bool): Whether to crop the image.
-    crop_heigth (int): The height to crop the image to.
-    name_region (str): The name of the region.
-    npy (bool): Whether the file is a numpy file.
+        file (str): The file name.
+        actin_file (str): The actin file name.
+        image_dir (str): The directory containing the image.
+        actin_dir (str): The directory containing the actin image.
+        outdir (str): The output directory.
+        flow_direction_map (dict): Mapping of flow directions.
+        flow_direction (str): The flow direction.
+        params (dict): Analysis parameters.
+        npy (bool): Whether the file is a numpy file.
 
     Returns:
-    tuple: Labeled image, outlines, name, filename, rotations, crop bounds.
+        tuple: 
+            - np.ndarray: Labeled image.
+            - np.ndarray: Outlines.
+            - np.ndarray: Actin image.
+            - str: Name of the file.
+            - str: Filename for saving.
+            - str: Output directory.
     """
     name_region, display_orientation, crop_image, crop_heigth, actin = map(params.get, 
                                                                     ['name_region', 
@@ -224,18 +235,16 @@ def process_and_initialize(file: str, actin_file:str, image_dir: str, actin_dir:
     return label_image, outlines, actin_image, name, filename, outdir
 
 # Region analysis
-def region_analysis(label_image: np.ndarray, params:dict) -> pd.DataFrame:
+def region_analysis(label_image: np.ndarray, params: dict) -> pd.DataFrame:
     """
     Analyze regions in a labeled image and filter them based on area constraints.
 
     Parameters:
-    label_image (np.ndarray): The labeled image.
-    min_area (float): The minimum area for filtering.
-    max_area (float): The maximum area for filtering.
-    fcal (float): Calibration factor.
+        label_image (np.ndarray): The labeled image.
+        params (dict): Analysis parameters.
 
     Returns:
-    pd.DataFrame: DataFrame containing the filtered region properties.
+        pd.DataFrame: DataFrame containing the filtered region properties.
     """
     min_area, max_area, fcal = map(params.get, ['min_area', 'max_area', 'fcal', 'calculate_actin_fibers_number'])
     stats = pd.DataFrame(regionprops_table(label_image,
@@ -260,7 +269,21 @@ def region_analysis(label_image: np.ndarray, params:dict) -> pd.DataFrame:
     return stats_filtered
 
 # Visualize
-def create_propertie_image(stats_filtered, label_image, outlines, current_outdir, name, analysis_params):
+def create_propertie_image(stats_filtered: pd.DataFrame, label_image: np.ndarray, outlines: np.ndarray, current_outdir: str, name: str, analysis_params: dict) -> list:
+    """
+    Create property images for visualization of region properties.
+
+    Parameters:
+        stats_filtered (pd.DataFrame): Filtered region properties.
+        label_image (np.ndarray): The labeled image.
+        outlines (np.ndarray): Outlines of the regions.
+        current_outdir (str): Current output directory.
+        name (str): Name of the file.
+        analysis_params (dict): Analysis parameters.
+
+    Returns:
+        list: List of property images.
+    """
     # Extract cmaps & normalizations
     cmap_area, cmap_orientation, cmap_asp_ratio, cmap_tortuosity, cmap_num_neighbors, cmap_actin_fibers = analysis_params.get('cmaps')
     norm_area, norm_orientation, norm_asp_ratio, norm_tortuosity, norm_num_neighbors, norm_actin_fibers = analysis_params.get('normalizations')
@@ -325,7 +348,17 @@ def create_propertie_image(stats_filtered, label_image, outlines, current_outdir
         tiff.imwrite(current_outdir + name + name_actin_fibers, im_actin_fibers)
     return [im_orientation, im_area, im_asp_ratio, im_tortuosity, im_num_neighbors, im_actin_fibers]
 
-def save_as_figure(prop_images, stats_filtered, current_outdir, name, analysis_params):
+def save_as_figure(prop_images: list, stats_filtered: pd.DataFrame, current_outdir: str, name: str, analysis_params: dict):
+    """
+    Save property images as figures with additional annotations.
+
+    Parameters:
+        prop_images (list): List of property images.
+        stats_filtered (pd.DataFrame): Filtered region properties.
+        current_outdir (str): Current output directory.
+        name (str): Name of the file.
+        analysis_params (dict): Analysis parameters.
+    """
     # Extract images
     im_orientation, im_area, im_asp_ratio, im_tortuosity, im_num_neighbors, im_actin_fibers = prop_images
     cmap_area, cmap_orientation, cmap_asp_ratio, cmap_tortuosity, cmap_num_neighbors, cmap_actin_fibers = analysis_params.get('cmaps')
@@ -398,4 +431,3 @@ def save_as_figure(prop_images, stats_filtered, current_outdir, name, analysis_p
     plot_filename_numbers = current_outdir + name + name_region_prop_numbers
     fig.savefig(plot_filename_numbers)
 
-        
