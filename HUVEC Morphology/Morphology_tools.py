@@ -1,5 +1,12 @@
 #-------------------------------------------------------
-# Moprhology analysis
+# Moprhology analysis tools
+# By: Felix Romer
+# Last updated: 26.04.2025
+# Description:
+# This script contains functions for analyzing and visualizing the morphology of segmented cells form microscopy images.
+# It includes functions for counting neighboring regions, calculating actin fibers, and generating property images.
+# The script also provides functions for processing and initializing images, performing region analysis, and saving results.
+# The code is designed to work with labeled images and outlines, and it uses various libraries such as skimage, scipy, and matplotlib for image processing and visualization.
 #-------------------------------------------------------
 from scipy.ndimage import binary_dilation
 import feret
