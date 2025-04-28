@@ -6,7 +6,7 @@ This repository contains custom scripts for analyzing endothelial cell (HUVEC) m
 1. [Project Overview](#project-overview)
 2. [Workflow Summary](#workflow-summary)
 3. [Requirements](#requirements)
-4. [Video Visualization](#video-visualization)
+4. [Video Visualisation](#video-visualisation)
 5. [Citation](#citation)
 6. [License](#license)
 7. [Acknowledgment](#acknowledgment)
