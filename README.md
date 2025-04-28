@@ -64,7 +64,7 @@ Custom Python and MATLAB scripts were developed for segmentation, morphology qua
 | `analysis_env.yml`        | Processing nematic ordering data.            |
 | `aft_312_env.yml`         | Calculating order parameters in AFT scripts. |
 
-# Video visualization
+# Video visualisation
 This video illustrates the geometry and appearance of a microfluidic channel section. Cells were fixed and stained for:
 - **Nuclei** (blue)
 - **Actin** (red)
